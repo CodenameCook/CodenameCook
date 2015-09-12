@@ -1,0 +1,146 @@
+@@ -0,0 +1,145 @@
+<HTML>
+<HEAD>
+<Title>Cookie's Profile Information Retriever</Title>
+<!-- Browse for 
+      - file:   based on the HTMLDlgHelper class 
+                registered via C:\Windows\System32\mshtmled.dll
+                (.OpenFileDlg returns string)
+      - folder: based on the Shell.BrowseForFolder method
+                (returns the selected folder's Folder object)
+-->
+<HTA:APPLICATION 
+    ID=""
+    APPLICATIONNAME="Cookie's Ping Tester"
+    SCROLL="no"
+    SINGLEINSTANCE="yes"
+    WINDOWSTATE="normal"
+    MAXIMIZEBUTTON="no"
+    MINIMIZEBUTTON="no"
+    ICON="favicon.ico"
+    BORDER="thin"
+>
+
+<script language="VBScript">
+
+''''''''''''''''''''''''''
+''' Global State Variables
+''''''''''''''''''''''''''
+  Dim sStartPath, sStartFile, sFilter, sCaption
+  sStartPath = "D:\Remote"
+  sStartFile = sStartPath & "\nul"
+  sFilter    = "All Files (*.*)|*.*|" _
+      & "VBScript (*.vbs;*.vbc)|*.vbs;*.vbc|" _
+      & "HTML (*.htm;*.html;*.hta)|*.htm;*.html;*.hta|"
+  sCaption = "Choose a File:"
+
+Sub Window_Onload
+    self.Focus()
+    self.moveTo 1, 1
+    self.ResizeTo 500,400
+	remoteComputerName.style.visibility="hidden"
+End Sub
+
+Sub BrForFolder
+    sBFF = PickFolder(sStartPath)
+    If not sBFF = "" Then 
+      document.Copy_To_PC.txtfile.value = sBFF
+      document.Copy_To_PC.OKbuton.value = "Treat folder"
+    End If
+End Sub 
+
+Sub BrForFile_onclick
+    sBFF = Dlg.OpenFileDlg( CStr(sStartFile), , CStr(sFilter), CStr(sCaption))
+    If not sBFF = "" Then 
+      document.Copy_To_PC.txtfile.value = sBFF
+      document.Copy_To_PC.OKbuton.value = "Treat file"
+    End If
+End Sub 
+
+Function PickFolder(sStartPath)
+    Dim shell, oFldr
+    Set shell = CreateObject("Shell.Application")
+    Set oFldr = shell.BrowseForFolder(0, "Choose a folder:" _
+        , &H0001 + &H0004 + &H0010 + &H0020, sStartPath)
+    'See MSDN "BROWSEINFO structure" for constants
+    If (Not oFldr Is Nothing) Then
+        PickFolder = oFldr.Self.Path
+    Else
+        PickFolder = ""
+    End If
+    Set shell = Nothing
+    Set oFldr = Nothing
+End Function
+
+Sub DoFileOK()
+    IsBlank(document.Copy_To_PC.IP.value)
+    If IsBlank = True Then MsgBox Error: Please enter an IP Address or Host Name.
+    
+
+    MsgBox document.Copy_To_PC.OKbuton.value _
+        & " """ & document.Copy_To_PC.txtfile.value & """"
+    document.Copy_To_PC.txtfile.value = ""
+    document.Copy_To_PC.OKbuton.value = "Undefined"
+End Sub
+
+Sub radioButtonOnClick()
+	If radComputer(1).Checked Then
+	remoteComputerName.style.visibility="visible"
+	End If
+End Sub
+
+Function IsBlank(Value)
+'returns True if Empty or NULL or Zero
+If IsEmpty(Value) or IsNull(Value) Then
+ IsBlank = True
+ElseIf VarType(Value) = vbString Then
+ If Value = "" Then
+  IsBlank = True
+ End If
+ElseIf IsObject(Value) Then
+ If Value Is Nothing Then
+  IsBlank = True
+ End If
+ElseIf IsNumeric(Value) Then
+ If Value = 0 Then
+  wscript.echo " Zero value found"
+  IsBlank = True
+ End If
+Else
+ IsBlank = False
+End If
+End Function
+
+
+    
+</script>
+
+</HEAD><BODY
+STYLE="font:14 pt arial; color:black;"background = "Cookie.jpg">
+
+<FORM  name="Copy_To_PC">
+<p><b><font size="3">Username:</font></b></p>
+<input style="width:200px;" type="text" id="IP" name="IP" />
+<br>
+<br>
+<p><b><font size="3">Please specify a folder to save the log file.</font></b></p>
+<input style="width:450px;" type="text" id="txtfile" name="txtfile" value="C:\" />
+<br>
+<br>
+<input type="button" value="Browse for Folder"  onClick=BrForFolder()>
+<br>
+<br>
+<select size="1" name="OptionChooser" onChange="TestSub">
+ <option value="0"></option>
+ <option value="1">Option 1</option>
+ <option value="2">Option 2</option>
+ <option value="3">Option 3</option>
+ </select>
+<br>
+<br>
+<p><b><font size="3">Remote Computer Name</font></b></p>
+<input style="width:200px;" type="text" id="RemoteComputerName" name="remoteComputerName" />
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" value="Start Pinging!" id="OKbuton" onClick=DoFileOK()>
+<input type="button" value="   Exit   " onClick=self.window.close()>
+</FORM></BODY></HTML>
